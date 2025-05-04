@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Verificación de Palabras</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            text-align: center;
+            padding: 50px;
+        }
+
+        #container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-bottom: 20px;
+        }
+
+        .big-text {
+            font-size: 2em;
+            margin: 30px 0;
+        }
+
+        .button {
+            padding: 15px 30px;
+            font-size: 1em;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div id="pantalla-inicio">
+            <h3>En esta tarea de decisión léxica doble, tendrás que decidir</h3>
+            <p>si las combinaciones de letras son palabras reales o no.</p>
+            <p>Siempre verás dos secuencias de letras a la vez y tu tarea</p>
+            <p>es decidir si ambas están escritas de manera correcta.</p>
+            <button class="button">
+                Presiona espacio o haz clic aquí para continuar
+            </button>
+        </div>
+
+        <div id="pantalla-instrucciones" class="hidden">
+            <h3>Instrucciones:</h3>
+            <p>A: si ambas palabras son reales.</p>
+            <p>L: si al menos una palabra no es real.</p>
+            <p>Primero verás una sesión de entrenamiento con retroalimentación.</p>
+            <button class="button">
+                Presiona espacio o haz clic aquí para continuar
+            </button>
+        </div>
+
+        <div id="pantalla-inicio-2" class="hidden">
+            <h3>Tendrás que presionar:</h3>
+
+                <p>A si ambas secuencias de letras son palabras en español</p>
+
+                L si al menos una de las secuencias de letras no es una palabra en español
+
+                <p>El experimento comenzará con una sesión de entrenamiento en la que recibirás retroalimentación sobre la exactitud de tu respuesta.</p>
+
+                <p>Por favor, responde lo más rápido y preciso posible.</p>
+
+                <button class="button">Presiona la barra espaciadora para continuar</button>
+        </div>
+
+        <div id="pantalla-listo" class="hidden">
+            <h1>¿Listo?</h1>
+            <button class="button">
+                Presiona espacio o haz clic aquí para comenzar
+            </button>
+        </div>
+
+        <div id="pantalla-listo-2" class="hidden">
+            <h1>¿Listo?</h1>
+            <button class="button">
+                Presiona espacio o haz clic aquí para comenzar
+            </button>
+        </div>
+
+        <div id="pantalla-palabra" class="hidden">
+            <div class="big-text" id="palabras"></div>
+        </div>
+
+        <div id="pantalla-feedback" class="hidden">
+            <h1 id="mensaje-feedback"></h1>
+        </div>
+
+        <div id="pantalla-exp-real" class="hidden">
+            <h3>¡Genial!</h3>
+            <p>Ahora que has completado el entrenamiento, comencemos con el experimento real. No recibirás más comentarios sobre si tu respuesta fue correcta o no.</p>
+            <p>Por favor, responde lo más rápido y preciso posible.</p>
+            <button class="button">
+                Presiona espacio o haz clic aquí para continuar
+            </button>
+        </div>
+
+        <div id="pantalla-recordatorio" class="hidden">
+            <p>Recuerda, tendrás que presionar:</p>
+            <p>A si ves dos palabras en español</p>
+            <p>L si al menos una secuencia de letras no es una palabra en español</p>
+            <button class="button">
+                Presiona espacio o haz clic aquí para comenzar
+            </button>
+        </div>
+
+        <div id="pantalla-final" class="hidden">
+            <h2 id="resultado-final"></h2>
+            <p>¡Gracias por participar en este experimento!</p>
+        </div>
+    </div>
+
+    <script>
+        const entrenamiento = [
+            ["AGUA", "ESCUELA", "A"],
+            ["SATLAR", "RAMPA", "L"],
+            ["ZATAPO", "DARGON", "L"],
+            ["FECHA", "MECHA", "A"],
+            ["DUCHA", "ZURDO", "A"],
+            ["ROPA", "FERSAS", "L"],
+            ["SALTA", "BLUJA", "L"],
+        ];
+
+        const experimento = [
+            ["CARTA", "RAMPA", "A"],
+            ["MENTE", "FERSA", "L"],
+            ["DAPO", "PANDA", "L"],
+            ["LIBRO", "CASA", "A"],
+            ["LURO", "MUCO", "L"],
+            ["TEXTO", "JARRO", "A"],
+            ["LUCHA", "LUFE", "L"],
+            ["ZORRO", "FONDO", "A"],
+            ["BANCO", "SANTO", "A"],
+            ["TORRE", "POLE", "L"],
+            ["KILA", "COFRE", "L"],
+            ["PIRMERO", "CANGERJO", "L"],
+            ["FARO", "TACO", "A"],
+            ["COPIA", "VALLE", "A"],
+            ["FELCHA", "VISTA", "L"],
+        ];
+
+        let paso = 0;
+        let entrenamientoIndex = 0;
+        let experimentoIndex = 0;
+        let correctas = 0;
+        let esEntrenamiento = true;
+
+        const mostrarPantalla = (id) => {
+            document
+                .querySelectorAll("#container > div")
+                .forEach((div) => div.classList.add("hidden"));
+            document.getElementById(id).classList.remove("hidden");
+        };
+
+        const mostrarInstrucciones = () => mostrarPantalla("pantalla-instrucciones");
+
+        const mostrarInicio2 = () => mostrarPantalla("pantalla-inicio-2");
+
+        const mostrarListo = () => mostrarPantalla("pantalla-listo");
+
+        const mostrarListo2 = () => mostrarPantalla("pantalla-listo-2");
+
+        const mostrarRecordatorio = () => mostrarPantalla("pantalla-recordatorio");
+
+
+        const comenzarEntrenamiento = () => {
+            esEntrenamiento = true;
+            entrenamientoIndex = 0;
+            mostrarPalabra();
+        };
+
+        const comenzarExperimento = () => {
+            esEntrenamiento = false;
+            experimentoIndex = 0;
+            correctas = 0;
+            mostrarPalabra();
+        };
+
+        const mostrarPalabra = () => {
+            mostrarPantalla("pantalla-palabra");
+            let item = esEntrenamiento
+                ? entrenamiento[entrenamientoIndex]
+                : experimento[experimentoIndex];
+            document.getElementById(
+                "palabras"
+            ).textContent = `${item[0]} - ${item[1]}`;
+        };
+
+        const mostrarFeedback = (correcto) => {
+            mostrarPantalla("pantalla-feedback");
+            document.getElementById("mensaje-feedback").textContent = correcto
+                ? "¡Correcto!"
+                : "¡Incorrecto!";
+            setTimeout(() => {
+                if (esEntrenamiento) {
+                    entrenamientoIndex++;
+                    if (entrenamientoIndex < entrenamiento.length) {
+                        mostrarPalabra();
+                    } else {
+                        mostrarPantalla("pantalla-exp-real");
+                    }
+                } else {
+                    experimentoIndex++;
+                    if (experimentoIndex < experimento.length) {
+                        mostrarPalabra();
+                    } else {
+                        mostrarPantalla("pantalla-final");
+                        document.getElementById(
+                            "resultado-final"
+                        ).textContent = `Obtuviste ${correctas} respuestas correctas.`;
+                    }
+                }
+            }, 1000);
+        };
+
+        document.addEventListener("keydown", (e) => {
+            if (e.code === "Space") {
+                const current = document.querySelector(
+                    "#container > div:not(.hidden)"
+                ).id;
+                if (current === "pantalla-inicio") mostrarInicio2();
+                else if (current === "pantalla-inicio-2") mostrarListo();
+                else if (current === "pantalla-listo") comenzarEntrenamiento();
+                else if (current === "pantalla-exp-real") mostrarRecordatorio();
+                else if (current === "pantalla-recordatorio") mostrarListo2();
+                else if (current === "pantalla-listo-2") comenzarExperimento();
+                else if (current === "pantalla-final") location.reload();
+            }
+
+            if (["KeyA", "KeyL"].includes(e.code)) {
+                const respuesta = e.code === "KeyA" ? "A" : "L";
+                const actual = esEntrenamiento
+                    ? entrenamiento[entrenamientoIndex]
+                    : experimento[experimentoIndex];
+                const correcto = respuesta === actual[2];
+                if (!esEntrenamiento) {
+                    if (correcto) correctas++;
+                    experimentoIndex++;
+                    if (experimentoIndex < experimento.length) {
+                        mostrarPalabra();
+                    } else {
+                        mostrarPantalla("pantalla-final");
+                        document.getElementById("resultado-final").textContent =
+                            `Obtuviste ${correctas} respuestas correctas.`;
+                    }
+                } else {
+                    mostrarFeedback(correcto);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
